@@ -2,6 +2,7 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const util = require("util");
 const consoleTable = require("console.table");
+const { allowedNodeEnvironmentFlags } = require("process");
 
 let connection = mysql.createConnection({
     host: "localhost",
@@ -42,27 +43,106 @@ const init = () => {
         let userOption = answer.option;
         switch (userOption) {
             case "Add employee":
-
+                addEmployee();
                 break;
             case "Add role":
-
+                addRole();
                 break;
             case "Add department":
-
+                addDepartment();
                 break;
             case "View employees":
-
+                viewEmployees();
                 break;
             case "View departments":
-
+                viewDepartments();
                 break;
             case "View roles":
-
+                viewRoles();
                 break;
             case "Update role":
+                updateRole();
                 break;
             case "Quit":
                 break;
         }
     });
 };
+function addEmployee() {
+    const employee = await prompt([
+        {
+            name: "first_name",
+            message: "what is the employee first name?"
+        },
+        {
+            name: "last_name",
+            message: "what is the employee last name?"
+        }
+    ])
+}
+function addRole() {
+    const departmentChoices = departments.map(({ id, name }) => ({
+        name: name,
+        value: id
+    }))
+    const departments = await db.findAllDepartments()
+    const role = await prompt([
+        {
+            name: "title",
+            message: "what is your role to add?"
+        },
+        {
+            name: "salary",
+            message: "what is the salary for this role?"
+        },
+        {
+            type: "list",
+            name: "department_id",
+            message: "which department this job is located?",
+            choices: departmentChoices
+        }
+    ])
+    await db.createRole(role)
+    init()
+}
+function addDepartment() {
+    const department = await prompt([
+        {
+            name: "name",
+            message: "What is the name of the department?"
+        }
+    ])
+    await db.createDepartment(department)
+    init()
+}
+function viewEmployees() {
+    const employees = await db.findAllEmployees()
+    console.table(employees)
+    init()
+}
+function viewDepartments() {
+    const departments = await db.findAllDepartments()
+    console.table(departments)
+    init()
+}
+function viewRoles() {
+    const roles = await db.findAllRoles()
+    console.table(roles)
+    init()
+}
+function updateRole() {
+    const employee = await db.findAllEmployees()
+    const employeeChoices = employee.map(({ id, first_name, last_name }) => ({
+        name: `${first_name} ${last_name}`,
+        value: id
+
+    }))
+    const { employeeID } = await prompt([
+        {
+            type: "list",
+            name: "employeeID",
+            message: "which employees role do you wish to update?",
+            choices: employeeChoices
+        }
+    ])
+}
