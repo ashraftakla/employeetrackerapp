@@ -1,6 +1,7 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 const util = require("util");
+const db = require("./Assets/db");
 const consoleTable = require("console.table");
 const { allowedNodeEnvironmentFlags } = require("process");
 
@@ -68,8 +69,9 @@ const init = () => {
         }
     });
 };
-function addEmployee() {
-    const employee = await prompt([
+
+async function addEmployee() {
+    const employee = await inquirer.prompt([
         {
             name: "first_name",
             message: "what is the employee first name?"
@@ -78,14 +80,22 @@ function addEmployee() {
             name: "last_name",
             message: "what is the employee last name?"
         }
-    ])
+    ]);
+
+    await db.addEmployee(employee);
+    init();
+
 }
-function addRole() {
+
+
+async function addRole() {
+    const departments = await db.findAllDepartments();
+
     const departmentChoices = departments.map(({ id, name }) => ({
         name: name,
         value: id
     }))
-    const departments = await db.findAllDepartments()
+
     const role = await prompt([
         {
             name: "title",
@@ -102,35 +112,35 @@ function addRole() {
             choices: departmentChoices
         }
     ])
-    await db.createRole(role)
+    await db.createRole(role);
     init()
 }
-function addDepartment() {
+async function addDepartment() {
     const department = await prompt([
         {
             name: "name",
             message: "What is the name of the department?"
         }
     ])
-    await db.createDepartment(department)
-    init()
+    await db.createDepartment(department);
+    init();
 }
-function viewEmployees() {
+async function viewEmployees() {
     const employees = await db.findAllEmployees()
     console.table(employees)
     init()
 }
-function viewDepartments() {
+async function viewDepartments() {
     const departments = await db.findAllDepartments()
     console.table(departments)
     init()
 }
-function viewRoles() {
+async function viewRoles() {
     const roles = await db.findAllRoles()
     console.table(roles)
     init()
 }
-function updateRole() {
+async function updateRole() {
     const employee = await db.findAllEmployees()
     const employeeChoices = employee.map(({ id, first_name, last_name }) => ({
         name: `${first_name} ${last_name}`,
