@@ -71,6 +71,8 @@ const init = () => {
 };
 
 async function addEmployee() {
+    const roles = await db.findAllRoles();
+
     const employee = await inquirer.prompt([
         {
             name: "first_name",
@@ -81,8 +83,20 @@ async function addEmployee() {
             message: "what is the employee last name?"
         }
     ]);
+    const roleChoices = roles.map(({ id, title }) => ({
+        name: title,
+        value: id
+    }));
 
-    await db.addEmployee(employee);
+    const { roleId } = await prompt({
+        type: "list",
+        name: "roleId",
+        message: "What is the employee's role?",
+        choices: roleChoices
+    });
+
+    employee.role_id = roleId
+    await db.createEmployee(employee);
     init();
 
 }
