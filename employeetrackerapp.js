@@ -25,12 +25,18 @@ connection.connect(err => {
 });
 
 const options = [
-    "Add employee",
-    "Add role",
-    "Add department",
-    "View employees",
+
     "View departments",
+
+    "Add department",
     "View roles",
+    "Add role",
+
+    "View employees",
+    "Add employee",
+
+
+
     "Update role",
     "Quit"
 ];
@@ -44,24 +50,27 @@ const init = () => {
     }).then(answer => {
         let userOption = answer.option;
         switch (userOption) {
-            case "Add employee":
-                addEmployee();
-                break;
-            case "Add role":
-                addRole();
+            case "View departments":
+                viewDepartments();
                 break;
             case "Add department":
                 addDepartment();
                 break;
-            case "View employees":
-                viewEmployees();
-                break;
-            case "View departments":
-                viewDepartments();
-                break;
+
             case "View roles":
                 viewRoles();
                 break;
+            case "Add role":
+                addRole();
+                break;
+
+            case "View employees":
+                viewEmployees();
+                break;
+            case "Add employee":
+                addEmployee();
+                break;
+
             case "Update role":
                 updateRole();
                 break;
