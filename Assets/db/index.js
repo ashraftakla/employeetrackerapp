@@ -12,6 +12,9 @@ class DB {
     createRole(role) {
         return this.connection.query("INSERT INTO role SET ?", role)
     }
+    updateEmployeeRole(employee) {
+        return this.connection.query("Update employee SET role_id=? where id=?", [employee.role_id, employee.id])
+    }
     removeRole(roleID) {
         return this.connection.query("DELETE FROM role WHERE id=?", roleID)
     }
@@ -29,6 +32,11 @@ class DB {
     findAllRoles() {
         return this.connection.query(
             "SELECT role.id, role.title, department.name AS department, role.salary FROM role LEFT JOIN department on role.department_id = department.id;"
+        );
+    }
+    findAllDepartments() {
+        return this.connection.query(
+            "SELECT * FROM department"
         );
     }
 

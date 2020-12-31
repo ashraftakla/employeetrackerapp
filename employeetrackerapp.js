@@ -20,6 +20,7 @@ connection.connect(err => {
         throw err;
     }
     console.log(`connected as ${connection.threadId} id`);
+
     init();
 });
 
@@ -88,7 +89,7 @@ async function addEmployee() {
         value: id
     }));
 
-    const { roleId } = await prompt({
+    const { roleId } = await inquirer.prompt({
         type: "list",
         name: "roleId",
         message: "What is the employee's role?",
@@ -110,7 +111,7 @@ async function addRole() {
         value: id
     }))
 
-    const role = await prompt([
+    const role = await inquirer.prompt([
         {
             name: "title",
             message: "what is your role to add?"
@@ -130,7 +131,7 @@ async function addRole() {
     init()
 }
 async function addDepartment() {
-    const department = await prompt([
+    const department = await inquirer.prompt([
         {
             name: "name",
             message: "What is the name of the department?"
@@ -154,6 +155,7 @@ async function viewRoles() {
     console.table(roles)
     init()
 }
+
 async function updateRole() {
     const employee = await db.findAllEmployees()
     const employeeChoices = employee.map(({ id, first_name, last_name }) => ({
@@ -161,12 +163,29 @@ async function updateRole() {
         value: id
 
     }))
-    const { employeeID } = await prompt([
+
+    const roles = await db.findAllRoles();
+
+    const roleChoices = roles.map(({ id, title }) => ({
+        name: title,
+        value: id
+    }));
+
+    const selectedEmployee = await inquirer.prompt([
         {
             type: "list",
-            name: "employeeID",
+            name: "id",
             message: "which employees role do you wish to update?",
             choices: employeeChoices
+        },
+        {
+            type: "list",
+            name: "role_id",
+            message: "What is the employee's role?",
+            choices: roleChoices
         }
     ])
+
+    await db.updateEmployeeRole(selectedEmployee);
+    init();
 }
